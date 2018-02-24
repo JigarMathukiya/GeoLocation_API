@@ -2,6 +2,7 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template, redirect, url_for
+from app import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jimmy@localhost/geolocation'
@@ -34,14 +35,21 @@ def index():
 def post_user():
 	geoLoc = GeoLocation(request.form['key'],request.form['place_name'],request.form['admin_name1'],request.form['latitude'],request.form['longitude'],request.form['accuracy'])
 	exists = GeoLocation.query.filter_by(key=request.form['key']).first()
-	print(exists)
+	#print(exists)
 	if(exists == None):
 		db.session.add(geoLoc)
 		db.session.commit()	
 		return "<p>Pincode is insert in database.</p>"
 	else:
 		return "<p>Pincode is already insert in database !</p>"
-	
+		
+@app.route('/get_using_self', methods=['GET', 'POST'])
+def get_using_self():if request.method == "POST":
+		geo_location_data = db.engine.execute('select * from ( SELECT  *,( 3959 * acos( cos( radians(6.414478) ) * cos( radians( '+request.form['latitude']+' ) ) * cos( radians( '+request.form['longitude']+' ) - radians(12.466646) ) + sin( radians(6.414478) ) * sin( radians( '+request.form['latitude']+' ) ) ) ) AS distance FROM geo_location ) al where accuracy < 5 ORDER BY accuracy LIMIT 20;')
+		db.session.commit()
+		return render_template('find_pincode.html',geo_locations=geo_location_data)
+	return render_template('find_pincode.html')
+		
 if __name__ == "__main__":
      # Check the System Type before to decide to bind
      # If the system is a Linux machine -:) 
