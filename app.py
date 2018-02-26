@@ -44,8 +44,9 @@ def post_user():
 		return "<p>Pincode is already insert in database !</p>"
 		
 @app.route('/get_using_self', methods=['GET', 'POST'])
-def get_using_self():if request.method == "POST":
-		geo_location_data = db.engine.execute('select * from ( SELECT  *,( 3959 * acos( cos( radians(6.414478) ) * cos( radians( '+request.form['latitude']+' ) ) * cos( radians( '+request.form['longitude']+' ) - radians(12.466646) ) + sin( radians(6.414478) ) * sin( radians( '+request.form['latitude']+' ) ) ) ) AS distance FROM geo_location ) al where accuracy < 5 ORDER BY accuracy LIMIT 20;')
+def get_using_self():
+	if request.method == "POST":
+		geo_location_data = db.engine.execute('select * from ( SELECT  *,( 3959 * acos( cos( radians(6.414478) ) * cos( radians( '+request.form['latitude']+' ) ) * cos( radians( '+request.form['longitude']+' ) - radians(12.466646) ) + sin( radians(6.414478) ) * sin( radians( '+request.form['latitude']+' ) ) ) ) AS distance FROM geo_location ) al where distance < 5 ORDER BY distance;')
 		db.session.commit()
 		return render_template('find_pincode.html',geo_locations=geo_location_data)
 	return render_template('find_pincode.html')
