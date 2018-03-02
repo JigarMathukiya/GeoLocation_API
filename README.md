@@ -1,8 +1,5 @@
 # GeoLocation_API
 
-Create a repo on github or bitbucket, please name it "apitest"
- 
-use any language, but you have to use postgresql
 Database setup : (NOTE: Enable geolocation features in Postgresql with extensions : cube and earthdistance.
 Use the specific data types to create latitude and longitude
  
